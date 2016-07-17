@@ -2,7 +2,6 @@
 import java.text.SimpleDateFormat
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.{SparkConf, SparkContext}
 
 /**
   * Created by peterbugaj on 2016-07-17.
@@ -70,7 +69,7 @@ object Sessionizer {
     // Get the unique vists per user
     val uniqueVistPerUser = infoPerUser.
       reduceByKey(_ + _).
-      map(p => (p._1._1, p._2)).
+      map(p => (p._1._1, 1)).
       reduceByKey(_ + _)
 
     // Write the output.
