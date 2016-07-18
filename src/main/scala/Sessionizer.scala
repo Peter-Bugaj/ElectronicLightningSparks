@@ -117,6 +117,8 @@ object Sessionizer {
         frontSegment = (acc.frontSegment._1, value.frontSegment._2)
       }
 
+      var centerSegmentLength = value.backSegment._1 - acc.frontSegment._2
+
       SessionInfo(
         stampStart = acc.stampStart,
         stampEnd = value.stampEnd,
@@ -126,7 +128,7 @@ object Sessionizer {
         frontSegment = frontSegment,
         longest = Math.max(
           Math.max(acc.longest, value.longest),
-          Math.max(backSegment._2 - backSegment._1, frontSegment._2 - frontSegment._1)))
+          Math.max(backSegment._2 - backSegment._1, Math.max(frontSegment._2 - frontSegment._1, centerSegmentLength))))
     }
   }
 
