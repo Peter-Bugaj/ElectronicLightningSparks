@@ -156,7 +156,7 @@ object SessionizeApp {
   }
 
   /**
-    * Check that the session averages are correctly computed.
+    * Check that the session averages are correctly computed per user IP.
     */
   def test_6_sessionsAverages(): Unit = {
 
