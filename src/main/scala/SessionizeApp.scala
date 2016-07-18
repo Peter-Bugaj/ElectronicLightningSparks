@@ -219,7 +219,8 @@ object SessionizeApp {
   }
 
   /**
-    * Find the longest session for multiple different users IP addresses.
+    * Find the longest session for multiple different users IP
+    * addresses, with each user having multiple sessions
     */
   def test_9_longestSessionMultipleUsers(): Unit = {
 
@@ -245,7 +246,7 @@ object SessionizeApp {
 
   /**
     * Ensure that the data is returned, sorted by users with the longest
-    * session length, to be able to see the most engaged users on top.
+    * session length, so to be able to see the most engaged users on top.
     */
   def test_10_getMostEngagedUsers(): Unit = {
 

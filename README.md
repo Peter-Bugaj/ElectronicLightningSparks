@@ -53,8 +53,18 @@ test_6_sessionsAverages
 ###Check that the session averages are correctly computed, where some of the sessions are of length zero###
 test_7_sessionsAveragesWithZeroLength
 
+-
+###Find the longest session for one specific user IP address###
+test_8_longestSessionOneUser
 
+-
+###Find the longest session for multiple different users IP addresses, with each user having multiple sessions###
+test_9_longestSessionMultipleUsers
 
+-
+###Ensure that the data is returned, sorted by users with the longest session length, so to be able to see the most engaged users on top###
+test_10_getMostEngagedUsers
 
-
-
+-
+###nsure that everything still works and that the longest session lengths are returned, even when the input data is not sorted by request times###
+test_11_useUnsortedData
