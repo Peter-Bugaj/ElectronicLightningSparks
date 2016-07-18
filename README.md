@@ -24,7 +24,7 @@ To execute the app, run the following in command line within the project directo
    target/scala-2.11/paytm-challenge_2.11-1.0.jar
 
 ##Testing##
-The following test cases where done (found in SessionizeApp):
+The following test cases where done (with test code found in ./src/main/scala/SessionizeApp and with test data files found in ./tests):
 
 ###Check that the unique URL visits per user are counted correctly###
 test_1_uniqueVisitPerUser
