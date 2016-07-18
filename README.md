@@ -25,9 +25,9 @@ To execute the app, run the following in command line within the project directo
 
 ##Testing##
 The following test cases where done:
-1.
-####Check that the unique URL visits per user are counted correctly.####
+
+###Check that the unique URL visits per user are counted correctly.###
 test_1_uniqueVisitPerUser
 
-####Check that the session are counted correctly for one user.####
+###Check that the session are counted correctly for one user.###
 test_2_sessionsPerOneUser
