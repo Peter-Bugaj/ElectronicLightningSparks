@@ -29,25 +29,28 @@ The following test cases where done (found in SessionizeApp):
 ###Check that the unique URL visits per user are counted correctly###
 test_1_uniqueVisitPerUser
 
+
 ###Check that the session are counted correctly for one user###
 test_2_sessionsPerOneUser
+
 
 ###Check that the session are counted correctly for multiple users###
 test_3_sessionsPerMultipleUsers
 
-###Check that the session are of correct length in the case where###
-###the user visited the site only once during a session. In other###
-###words the sessions are recorded as having length zero.###
+
+###Check that the session are of correct length in the case wher the user visited the site only once during a session. In other words the sessions are recorded as having length zero.###
 test_4_sessionsWithZeroLength
+
 
 ###Check that the session are of correct length for each user IP###
 test_5_sessionsWithLength
 
+
 ###Check that the session averages are correctly computed per user IP###
 test_6_sessionsAverages
 
-###Check that the session averages are correctly computed,###
-###where some of the sessions are of length zero###
+
+###Check that the session averages are correctly computed, where some of the sessions are of length zero###
 test_7_sessionsAveragesWithZeroLength
 
 
