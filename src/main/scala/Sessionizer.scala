@@ -28,16 +28,28 @@ object Sessionizer {
 
       (userIp, this._createDefautlSessionInfo(requestTime))
 
-    }).sortBy(p => p._2.stamp)
+    }).sortBy(p => p._2.stampStart)
 
     // Compute the statistic for each session per user.
-    val sessionsPerUser = requestsPerIp.foldByKey(
-      this._createDefautlSessionInfo(-1)) (
-      (acc, value) => this._updateSessionInfo(acc, value))
+    var sessionsPerUser = requestsPerIp.
+      reduceByKey(
+
+        (acc, value) => this._updateSessionInfo(acc, value))
 
     // At the end compute the averages as well
     // and sort by longest session times to see
     // the most engaged users.
+    sessionsPerUser = sessionsPerUser.map(p => {
+      (p._1, SessionInfo(
+        stampStart = p._2.stampStart,
+        stampEnd = p._2.stampEnd,
+        count = p._2.count + 1,
+        totalLength = p._2.totalLength,
+        currentLength = p._2.currentLength,
+        longest = p._2.longest))
+    })
+
+
     val sessionResultsWithAverages = sessionsPerUser.map(nextPair => {
       val sessionInfo = nextPair._2
 
@@ -85,7 +97,7 @@ object Sessionizer {
     value: SessionInfo): SessionInfo = {
 
     // Determine if there is a new user session.
-    val isNewSession = this._isNewSession(acc.stamp, value.stamp)
+    val isNewSession = this._isNewSession(acc.stampEnd, value.stampStart)
     if (isNewSession) {
 
       // If there is a new session, increase the session count, reset
@@ -93,9 +105,10 @@ object Sessionizer {
       // the same, as the inactive time (which was more than 15 minutes)
       // does not count as part of session activity.
       SessionInfo(
-        stamp = value.stamp,
-        count = acc.count + 1,
-        totalLength = acc.totalLength,
+        stampStart = acc.stampStart,
+        stampEnd = value.stampEnd,
+        count = acc.count + value.count + 1,
+        totalLength = acc.totalLength + value.totalLength,
         currentLength = 0,
         longest = acc.longest)
 
@@ -104,16 +117,15 @@ object Sessionizer {
       // Otherwise an existing session is still taking place. In this
       // case update the current session length, update the total
       // session activity, and keep track of the longest session seen so far.
-      val timeSinceLastRequest = value.stamp - acc.stamp
-      val newCurrentLength = acc.currentLength + timeSinceLastRequest
-      val newTotalLength = acc.totalLength + timeSinceLastRequest
+      val timeDiff = value.stampStart - acc.stampEnd
 
       SessionInfo(
-        stamp = value.stamp,
-        count = acc.count,
-        totalLength = newTotalLength,
-        currentLength = newCurrentLength,
-        longest = Math.max(newCurrentLength, acc.longest))
+        stampStart = acc.stampStart,
+        stampEnd = value.stampEnd,
+        count = acc.count + value.count,
+        totalLength = acc.totalLength + value.totalLength + timeDiff,
+        currentLength = 5,
+        longest = Math.max(5, acc.longest))
     }
   }
 
@@ -121,7 +133,13 @@ object Sessionizer {
     * Helper function to create default session info.
     */
   private def _createDefautlSessionInfo(stamp: Long): SessionInfo = {
-    SessionInfo(stamp = stamp, count = 0, totalLength = 0, currentLength = 0, longest = 0)
+    SessionInfo(
+      stampStart = stamp,
+      stampEnd = stamp,
+      count = 0,
+      totalLength = 0,
+      currentLength = 0,
+      longest = 0)
   }
 
   /**
@@ -137,14 +155,15 @@ object Sessionizer {
     * the previous and current time stamp.
     */
   private def _isNewSession(prev: Long, curr: Long): Boolean = {
-    curr < 0 || prev < 0 || (curr - prev) >= this._inactiveWindowMillis
+    (curr - prev) >= this._inactiveWindowMillis
   }
 
   /**
     * Class for helping to count sessions.
     */
   case class SessionInfo (
-    stamp: Long,
+    stampStart: Long,
+    stampEnd: Long,
     count: Int,
     totalLength: Double,
     currentLength: Double,
