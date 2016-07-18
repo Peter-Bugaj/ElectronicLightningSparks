@@ -45,7 +45,8 @@ object Sessionizer {
         stampEnd = p._2.stampEnd,
         count = p._2.count + 1,
         totalLength = p._2.totalLength,
-        currentLength = p._2.currentLength,
+        backSegment = p._2.backSegment,
+        frontSegment = p._2.frontSegment,
         longest = p._2.longest))
     })
 
@@ -108,7 +109,8 @@ object Sessionizer {
         stampEnd = value.stampEnd,
         count = acc.count + value.count + 1,
         totalLength = acc.totalLength + value.totalLength,
-        currentLength = value.currentLength,
+        backSegment = acc.backSegment,
+        frontSegment = value.frontSegment,
         longest = Math.max(acc.longest, value.longest))
 
     } else {
@@ -117,15 +119,27 @@ object Sessionizer {
       // case update the current session length, update the total
       // session activity, and keep track of the longest session seen so far.
       val timeDiff = value.stampStart - acc.stampEnd
-      val newCurrentLength = acc.currentLength + value.currentLength
+
+      var backSegment = acc.backSegment
+      if(acc.backSegment._2 == acc.stampEnd) {
+        backSegment = (acc.backSegment._1, value.backSegment._2)
+      }
+
+      var frontSegment = value.frontSegment
+      if(value.frontSegment._1 == value.stampStart) {
+        frontSegment = (acc.frontSegment._1, value.frontSegment._2)
+      }
 
       SessionInfo(
         stampStart = acc.stampStart,
         stampEnd = value.stampEnd,
         count = acc.count + value.count,
         totalLength = acc.totalLength + value.totalLength + timeDiff,
-        currentLength = acc.currentLength + value.currentLength,
-        longest = Math.max(Math.max(acc.longest, value.longest), newCurrentLength))
+        backSegment = backSegment,
+        frontSegment = frontSegment,
+        longest = Math.max(
+          Math.max(acc.longest, value.longest),
+          Math.max(backSegment._2 - backSegment._1, frontSegment._2 - frontSegment._1)))
     }
   }
 
@@ -138,7 +152,8 @@ object Sessionizer {
       stampEnd = stamp,
       count = 0,
       totalLength = 0,
-      currentLength = 0,
+      backSegment = (stamp, stamp),
+      frontSegment = (stamp, stamp),
       longest = 0)
   }
 
@@ -166,6 +181,7 @@ object Sessionizer {
     stampEnd: Long,
     count: Int,
     totalLength: Double,
-    currentLength: Double,
+    backSegment: (Long, Long),
+    frontSegment: (Long, Long),
     longest: Double)
 }

@@ -42,6 +42,14 @@ object SessionizeApp {
     this.test_6_sessionsAverages()
 
     this.test_7_sessionsAveragesWithZeroLength()
+
+    this.test_8_longestSessionOneUser()
+
+    this.test_9_longestSessionMultipleUsers()
+
+    this.test_10_getMostEngagedUsers()
+
+    this.test_11_useUnsortedData()
   }
 
   /**
@@ -178,9 +186,8 @@ object SessionizeApp {
     // Check that the unique visits per user are counted correctly.
     val input = this._sparkContext.textFile("tests/7_sessionAveragesWithZeroLength")
 
-    val results2 = Sessionizer.computeAverageSessionTime(input)
-    results2.saveAsTextFile("gaga")
-val results = results2.collect
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
     assert(results.length == 6)
 
     val lengthsPerUser = Array(
@@ -193,6 +200,91 @@ val results = results2.collect
 
     results.foreach(p => {
       assert(lengthsPerUser.exists(a => a._2 == p._3))
+    })
+  }
+
+  /**
+    * Find the longest session for one specific user IP address
+    */
+  def test_8_longestSessionOneUser(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/8_longestSessionsUser")
+
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
+    assert(results.length == 1)
+
+    assert(results.head._2.longest == 1320000)
+  }
+
+  /**
+    * Find the longest session for multiple different users IP addresses.
+    */
+  def test_9_longestSessionMultipleUsers(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/9_longestSessionsMultipleUsers")
+
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
+    assert(results.length == 6)
+
+    val lengthsPerUser = Array(
+      ("123.242.248.130:54635", 180000),
+      ("599.242.248.130", 1000),
+      ("400.242.248.130", 300000),
+      ("900.242.248.130", 0),
+      ("100.242.248.130", 0),
+      ("777.242.248.130", 1320000))
+
+    results.foreach(p => {
+      assert(lengthsPerUser.exists(a => a._2 == p._2.longest))
+    })
+  }
+
+  /**
+    * Ensure that the data is returned, sorted by users with the longest
+    * session length, to be able to see the most engaged users on top.
+    */
+  def test_10_getMostEngagedUsers(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/10_getMostEngagedUsers")
+
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
+    assert(results.length == 6)
+
+    // Check that the top three users are in order.
+    assert(results(0)._2.longest == 1320000)
+    assert(results(1)._2.longest == 300000)
+    assert(results(2)._2.longest == 180000)
+  }
+
+  /**
+    * Ensure that everything still works and that the longest session lengths
+    * are returned, even when the input data is not sorted by request times.
+    */
+  def test_11_useUnsortedData(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/11_unsortedData")
+
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
+    assert(results.length == 6)
+
+    val lengthsPerUser = Array(
+      ("123.242.248.130:54635", 180000),
+      ("599.242.248.130", 1000),
+      ("400.242.248.130", 300000),
+      ("900.242.248.130", 0),
+      ("100.242.248.130", 0),
+      ("777.242.248.130", 1320000))
+
+    results.foreach(p => {
+      assert(lengthsPerUser.exists(a => a._2 == p._2.longest))
     })
   }
 
