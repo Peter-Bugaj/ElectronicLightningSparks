@@ -1,5 +1,7 @@
 // Library files.
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.{
+  SparkConf,
+  SparkContext}
 
 /**
   * Created by peterbugaj on 2016-07-15.
@@ -17,11 +19,11 @@ object SessionizeApp {
     runTests()
 
     // If all test passed, execute the sessionizer on the actual data.
-    /**val input = this._sparkContext.textFile("data/realSample.log")
+    val input = this._sparkContext.textFile("data/realSample.log")
     Sessionizer.computeAverageSessionTime(input).
       saveAsTextFile("sessionsPerUser")
     Sessionizer.computeUniqueVisits(input).
-      saveAsTextFile("uniqueVisits")*/
+      saveAsTextFile("uniqueVisits")
   }
 
   /**

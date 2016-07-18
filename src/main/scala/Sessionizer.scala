@@ -3,6 +3,7 @@ import java.text.SimpleDateFormat
 
 import org.apache.spark.rdd.RDD
 
+
 /**
   * Created by peterbugaj on 2016-07-17.
   */
