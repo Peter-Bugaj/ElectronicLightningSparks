@@ -66,5 +66,5 @@ test_9_longestSessionMultipleUsers
 test_10_getMostEngagedUsers
 
 -
-###nsure that everything still works and that the longest session lengths are returned, even when the input data is not sorted by request times###
+###Ensure that everything still works and that the longest session lengths are returned, even when the input data is not sorted by request times###
 test_11_useUnsortedData
