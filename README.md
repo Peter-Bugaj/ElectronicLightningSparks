@@ -1,5 +1,5 @@
 ##Description##
-This is a challenge for PayTM that involves learning the basics of Spark. Project compiles and runs through SBT and can be added to IntelliJ for further support.
+Spark project that compiles and runs through SBT and which can be added to IntelliJ for further support.
 
 ##Author##
 Peter Bugaj
