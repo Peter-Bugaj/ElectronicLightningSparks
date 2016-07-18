@@ -117,7 +117,7 @@ object Sessionizer {
         frontSegment = (acc.frontSegment._1, value.frontSegment._2)
       }
 
-      var centerSegmentLength = value.backSegment._1 - acc.frontSegment._2
+      val centerSegmentLength = value.backSegment._2 - acc.frontSegment._1
 
       SessionInfo(
         stampStart = acc.stampStart,
