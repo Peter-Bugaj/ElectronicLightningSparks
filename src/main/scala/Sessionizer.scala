@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat
 
 import org.apache.spark.rdd.RDD
 
-
 /**
   * Created by peterbugaj on 2016-07-17.
   */
@@ -33,35 +32,22 @@ object Sessionizer {
 
     // Compute the statistic for each session per user.
     var sessionsPerUser = requestsPerIp.
-      reduceByKey(
+      reduceByKey((acc, value) => this._updateSessionInfo(acc, value))
 
-        (acc, value) => this._updateSessionInfo(acc, value))
-
-    // At the end compute the averages as well
-    // and sort by longest session times to see
-    // the most engaged users.
-    sessionsPerUser = sessionsPerUser.map(p => {
-      (p._1, SessionInfo(
-        stampStart = p._2.stampStart,
-        stampEnd = p._2.stampEnd,
-        count = p._2.count + 1,
-        totalLength = p._2.totalLength,
-        backSegment = p._2.backSegment,
-        frontSegment = p._2.frontSegment,
-        longest = p._2.longest))
-    })
-
+    // At the end compute the averages as well, append them to the results,
+    // and finally sort the data by longest session times to see the most
+    // engaged users.
+    sessionsPerUser = sessionsPerUser.map(p => (p._1, p._2.copy(count = p._2.count + 1)))
     val sessionResultsWithAverages = sessionsPerUser.map(nextPair => {
-      val sessionInfo = nextPair._2
 
+      val sessionInfo = nextPair._2
       val avg = sessionInfo.totalLength /
         sessionInfo.count
 
       (nextPair._1, sessionInfo, avg)
     }).sortBy(a=> a._2.longest, ascending = false)
 
-
-    // Write the output.
+    // Return the result.
     sessionResultsWithAverages
   }
 
@@ -79,19 +65,19 @@ object Sessionizer {
       ((userIp, requestAddr), 1)
     })
 
-    // Get the unique vists per user
+    // Get the unique vists per user.
     val uniqueVistPerUser = infoPerUser.
       reduceByKey(_ + _).
       map(p => (p._1._1, 1)).
       reduceByKey(_ + _)
 
-    // Write the output.
+    // Return the result.
     uniqueVistPerUser
   }
 
   /**
     * Helper function to update session information
-    * as part of an accumulative function.
+    * as part of an (accumulative, value) function.
     */
   private def _updateSessionInfo(
     acc: SessionInfo,
