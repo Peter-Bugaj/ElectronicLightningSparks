@@ -36,6 +36,12 @@ object SessionizeApp {
     this.test_3_sessionsPerMultipleUsers()
 
     this.test_4_sessionsWithZeroLength()
+
+    this.test_5_sessionsWithLength()
+
+    this.test_6_sessionsAverages()
+
+    this.test_7_sessionsAveragesWithZeroLength()
   }
 
   /**
@@ -110,14 +116,83 @@ object SessionizeApp {
     // Check that the unique visits per user are counted correctly.
     val input = this._sparkContext.textFile("tests/4_instantSessions")
 
-    val results2 = Sessionizer.computeAverageSessionTime(input)
-    results2.saveAsTextFile("aaa")
-    val results = results2.collect
+    val results = Sessionizer.computeAverageSessionTime(input).collect
 
     assert(results.length == 3)
 
     results.foreach(p => {
       assert(p._2.totalLength == 0)
+    })
+  }
+
+  /**
+    * Check that the session are of correct length for each user IP
+    */
+  def test_5_sessionsWithLength(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/5_sessionLengths")
+
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
+    assert(results.length == 3)
+
+    val lengthsPerUser = Array(
+      ("123.242.248.130:54635", 240000),
+      ("599.242.248.130", 1000),
+      ("400.242.248.130", 300000))
+
+    results.foreach(p => {
+      assert(lengthsPerUser.exists(a => a._2 == p._2.totalLength))
+    })
+  }
+
+  /**
+    * Check that the session averages are correctly computed.
+    */
+  def test_6_sessionsAverages(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/6_sessionAverages")
+
+    val results = Sessionizer.computeAverageSessionTime(input).collect
+
+    assert(results.length == 3)
+
+    val lengthsPerUser = Array(
+      ("123.242.248.130:54635", 80000),
+      ("599.242.248.130", 1000),
+      ("400.242.248.130", 150000))
+
+    results.foreach(p => {
+      assert(lengthsPerUser.exists(a => a._2 == p._3))
+    })
+  }
+
+  /**
+    * Check that the session averages are correctly computed,
+    * where some of the sessions are of length zero.
+    */
+  def test_7_sessionsAveragesWithZeroLength(): Unit = {
+
+    // Check that the unique visits per user are counted correctly.
+    val input = this._sparkContext.textFile("tests/7_sessionAveragesWithZeroLength")
+
+    val results2 = Sessionizer.computeAverageSessionTime(input)
+    results2.saveAsTextFile("gaga")
+val results = results2.collect
+    assert(results.length == 6)
+
+    val lengthsPerUser = Array(
+      ("123.242.248.130:54635", 80000),
+      ("599.242.248.130", 1000),
+      ("400.242.248.130", 150000),
+      ("900.242.248.130", 0),
+      ("100.242.248.130", 0),
+      ("777.242.248.130", 0))
+
+    results.foreach(p => {
+      assert(lengthsPerUser.exists(a => a._2 == p._3))
     })
   }
 

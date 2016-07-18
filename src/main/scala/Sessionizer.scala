@@ -49,7 +49,6 @@ object Sessionizer {
         longest = p._2.longest))
     })
 
-
     val sessionResultsWithAverages = sessionsPerUser.map(nextPair => {
       val sessionInfo = nextPair._2
 
@@ -109,8 +108,8 @@ object Sessionizer {
         stampEnd = value.stampEnd,
         count = acc.count + value.count + 1,
         totalLength = acc.totalLength + value.totalLength,
-        currentLength = 0,
-        longest = acc.longest)
+        currentLength = value.currentLength,
+        longest = Math.max(acc.longest, value.longest))
 
     } else {
 
@@ -118,14 +117,15 @@ object Sessionizer {
       // case update the current session length, update the total
       // session activity, and keep track of the longest session seen so far.
       val timeDiff = value.stampStart - acc.stampEnd
+      val newCurrentLength = acc.currentLength + value.currentLength
 
       SessionInfo(
         stampStart = acc.stampStart,
         stampEnd = value.stampEnd,
         count = acc.count + value.count,
         totalLength = acc.totalLength + value.totalLength + timeDiff,
-        currentLength = 5,
-        longest = Math.max(5, acc.longest))
+        currentLength = acc.currentLength + value.currentLength,
+        longest = Math.max(Math.max(acc.longest, value.longest), newCurrentLength))
     }
   }
 
