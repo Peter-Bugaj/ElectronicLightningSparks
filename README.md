@@ -1,7 +1,10 @@
 ##Description##
 This is a challenge for PayTM that involves learning the basics of Spark. Project compiles and runs through SBT and can be added to IntelliJ for further support.
 
+##Author##
+Peter Bugaj
 
+##Running the code##
 To execute the app, run the following in command line within the project directory:
 1. $>: SBT
 
@@ -20,3 +23,11 @@ To execute the app, run the following in command line within the project directo
    --master "local[*]" \
    target/scala-2.11/paytm-challenge_2.11-1.0.jar
 
+##Testing##
+The following test cases where done:
+1.
+####Check that the unique URL visits per user are counted correctly.####
+test_1_uniqueVisitPerUser
+
+####Check that the session are counted correctly for one user.####
+test_2_sessionsPerOneUser

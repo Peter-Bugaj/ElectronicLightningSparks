@@ -53,7 +53,7 @@ object SessionizeApp {
   }
 
   /**
-    * Check that the unique visits per user are counted correctly.
+    * Check that the unique URL visits per user are counted correctly.
     */
   def test_1_uniqueVisitPerUser(): Unit = {
 
